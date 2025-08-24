@@ -1,0 +1,14 @@
+D:\Code\tsbilibilibot-proxy\bin\Release\net8.0\Proxy.exe
+D:\Code\tsbilibilibot-proxy\bin\Release\net8.0\Proxy.deps.json
+D:\Code\tsbilibilibot-proxy\bin\Release\net8.0\Proxy.runtimeconfig.json
+D:\Code\tsbilibilibot-proxy\bin\Release\net8.0\Proxy.dll
+D:\Code\tsbilibilibot-proxy\bin\Release\net8.0\Proxy.pdb
+D:\Code\tsbilibilibot-proxy\obj\Release\net8.0\Proxy.GeneratedMSBuildEditorConfig.editorconfig
+D:\Code\tsbilibilibot-proxy\obj\Release\net8.0\Proxy.AssemblyInfoInputs.cache
+D:\Code\tsbilibilibot-proxy\obj\Release\net8.0\Proxy.AssemblyInfo.cs
+D:\Code\tsbilibilibot-proxy\obj\Release\net8.0\Proxy.csproj.CoreCompileInputs.cache
+D:\Code\tsbilibilibot-proxy\obj\Release\net8.0\Proxy.dll
+D:\Code\tsbilibilibot-proxy\obj\Release\net8.0\refint\Proxy.dll
+D:\Code\tsbilibilibot-proxy\obj\Release\net8.0\Proxy.pdb
+D:\Code\tsbilibilibot-proxy\obj\Release\net8.0\Proxy.genruntimeconfig.cache
+D:\Code\tsbilibilibot-proxy\obj\Release\net8.0\ref\Proxy.dll

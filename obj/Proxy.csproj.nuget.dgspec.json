@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\TS3bilibili\\proxy\\Proxy\\Proxy.csproj": {}
+    "D:\\Code\\tsbilibilibot-proxy\\Proxy.csproj": {}
   },
   "projects": {
-    "D:\\TS3bilibili\\proxy\\Proxy\\Proxy.csproj": {
+    "D:\\Code\\tsbilibilibot-proxy\\Proxy.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\TS3bilibili\\proxy\\Proxy\\Proxy.csproj",
+        "projectUniqueName": "D:\\Code\\tsbilibilibot-proxy\\Proxy.csproj",
         "projectName": "Proxy",
-        "projectPath": "D:\\TS3bilibili\\proxy\\Proxy\\Proxy.csproj",
+        "projectPath": "D:\\Code\\tsbilibilibot-proxy\\Proxy.csproj",
         "packagesPath": "C:\\Users\\30370\\.nuget\\packages\\",
-        "outputPath": "D:\\TS3bilibili\\proxy\\Proxy\\obj\\",
+        "outputPath": "D:\\Code\\tsbilibilibot-proxy\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\30370\\AppData\\Roaming\\NuGet\\NuGet.Config"
