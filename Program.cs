@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -31,46 +32,65 @@ class BilibiliAudioProxy
     private static async Task HandleRequestAsync(HttpListenerContext context)
     {
         await Semaphore.WaitAsync();
+        string targetUrl = ""; // 将 targetUrl 提到外部，以便 catch 块可以访问
         try
         {
             string query = context.Request.Url.Query;
-            string targetUrl = WebUtility.UrlDecode(query.TrimStart('?'));
+            targetUrl = WebUtility.UrlDecode(query.TrimStart('?'));
 
             if (string.IsNullOrWhiteSpace(targetUrl))
             {
-                Console.WriteLine("[WARN] 收到无效请求，没有 URL 参数");
+                //    Trace.WriteLine("[WARN] 收到无效请求，没有 URL 参数");
                 context.Response.StatusCode = 400;
                 await WriteAndCloseAsync(context.Response, "Invalid request");
                 return;
             }
 
-            Console.WriteLine($"[INFO] 收到请求：{targetUrl}");
+            //Trace.WriteLine($"[INFO] 收到请求：{targetUrl}");
 
-            try
+            var request = new HttpRequestMessage(HttpMethod.Get, targetUrl);
+            request.Headers.Referrer = new Uri("https://www.bilibili.com");
+            request.Headers.UserAgent.ParseAdd("Mozilla/5.0");
+
+            using (var result = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, targetUrl);
-                request.Headers.Referrer = new Uri("https://www.bilibili.com");
-                request.Headers.UserAgent.ParseAdd("Mozilla/5.0");
+                context.Response.StatusCode = (int)result.StatusCode;
+                context.Response.ContentType = result.Content.Headers.ContentType?.ToString();
 
-                using (var result = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
+                using (var responseStream = await result.Content.ReadAsStreamAsync())
                 {
-                    context.Response.StatusCode = (int)result.StatusCode;
-                    context.Response.ContentType = result.Content.Headers.ContentType?.ToString();
-                    // 流式转发，防止大文件占用内存
-                    using (var responseStream = await result.Content.ReadAsStreamAsync())
+                    // --- 核心修改点：为数据复制和连接关闭操作增加独立的异常处理 ---
+                    try
                     {
                         await responseStream.CopyToAsync(context.Response.OutputStream);
+                        context.Response.OutputStream.Close(); // 正常关闭
                     }
-                    context.Response.Close();
+                    catch (HttpListenerException ex) when (ex.ErrorCode == 1229)
+                    {
+                        // 捕获到“企图在不存在的网络连接上进行操作”这个特定错误
+                        // Trace.WriteLine($"[WARN] 连接被对方强制关闭 (可能是 hdnts 验证失败)。URL: {targetUrl}");
+                        // 连接已经断开，我们什么都不用做，直接放弃即可
+                    }
+                    catch (Exception ex)
+                    {
+                        // 捕获其他在流复制过程中可能发生的错误
+                        //Trace.WriteLine($"[ERROR] 在转发数据流时发生错误。URL: {targetUrl}\n原因：{ex.Message}");
+                        // 尝试中止响应，而不是关闭
+                        context.Response.Abort();
+                    }
                 }
-                Console.WriteLine($"[INFO] 请求成功：{targetUrl}");
             }
-            catch (Exception ex)
+        }
+        catch (Exception ex)
+        {
+            // 这是外层的 catch，处理发送请求之前的错误（如DNS解析失败、超时等）
+            //  Trace.WriteLine($"[ERROR] 请求失败：{targetUrl}\n原因：{ex.Message}");
+            try
             {
-                Console.WriteLine($"[ERROR] 请求失败：{targetUrl}\n原因：{ex.Message}");
                 context.Response.StatusCode = 500;
                 await WriteAndCloseAsync(context.Response, "Proxy error: " + ex.Message);
             }
+            catch { } // 如果此时 response 也出错了，就忽略
         }
         finally
         {
